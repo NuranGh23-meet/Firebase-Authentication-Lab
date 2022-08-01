@@ -60,7 +60,25 @@ def signup():
 
 @app.route('/add_tweet', methods=['GET','POST'])
 def add_tweet():
-    return render_template("add_tweet.html")
+    try:
+        tweet = {"title":request.form['title'], "text":request.form ['text'], 'uid':login_session['user']['localId']}
+        db.child("tweets").push(tweet)
+        return render_template("tweets.html")
+    except:
+        print('error')
+        return render_template("add_tweet.html")
+
+
+@app.route('/all_tweets', methods=['GET' , 'POST'])
+def all_tweets():
+    tweets = db.child("tweets").get().val()
+    return render_template('tweets.html')
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
