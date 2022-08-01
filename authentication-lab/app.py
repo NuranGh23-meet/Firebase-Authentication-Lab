@@ -11,11 +11,12 @@ config = {
   "messagingSenderId": "885174428012",
   "appId": "1:885174428012:web:84508b430ced723ab39349",
   "measurementId": "G-D7W953XLY2",
-  "databaseURL": ""
-
+  "databaseURL": "https://auth-lab-d9cef-default-rtdb.europe-west1.firebasedatabase.app"
 }
+
 firebase = pyrebase.initialize_app(config)
 auth = firebase.auth()
+db = firebase.database()
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config['SECRET_KEY'] = 'super-secret-key'
@@ -46,9 +47,12 @@ def signup():
 
         try: 
             login_session['user'] = auth.create_user_with_email_and_password(email , password)
+            user = {'username' : request.form['username'] , "full_name": request.form['full_name'] , "bio": request.form['bio']}
+            db.child("users").child(login_session['user']['localId']).set(user)
             return redirect(url_for('add_tweet'))  
 
         except: 
+   
             error = "Authentication failed"
     return render_template("signup.html")
 
